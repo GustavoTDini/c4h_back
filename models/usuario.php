@@ -38,7 +38,8 @@ class usuario{
     }
 
     // CREATE
-    public function adicionarUsuarioPessoaFisica(){
+    public function adicionarUsuarioPessoaFisica(): bool
+    {
         $sqlQuery = "INSERT INTO ". $this->db_table . "
                     SET
                         id_usuario      = :id,
@@ -65,7 +66,8 @@ class usuario{
     }
 
     // CREATE
-    public function adicionarUsuarioPessoaJuridica(){
+    public function adicionarUsuarioPessoaJuridica(): bool
+    {
         $sqlQuery = "INSERT INTO ". $this->db_table . "
                     SET
                         id_usuario      = :id,
@@ -91,29 +93,50 @@ class usuario{
         return false;
     }
 
+    // GET Verify Login
+    public function verificarLogin(){
+        $sqlQuery = "SELECT EXISTS(SELECT * FROM ". $this->db_table ." WHERE nm_login = ? )";
+        $stmt = $this->db_conn->prepare($sqlQuery);
+        $stmt->bindParam(1, $this->login);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    // GET Verify CPF
+    public function verificarCpf(){
+        $sqlQuery = "SELECT EXISTS(SELECT * FROM ". $this->db_table ." WHERE vl_cpf = ? )";
+        $stmt = $this->db_conn->prepare($sqlQuery);
+        $stmt->bindParam(1, $this->cpf);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    // GET Verify CPF
+    public function verificarCnpj(){
+        $sqlQuery = "SELECT EXISTS(SELECT * FROM ". $this->db_table ." WHERE vl_cnpj = ? )";
+        $stmt = $this->db_conn->prepare($sqlQuery);
+        $stmt->bindParam(1, $this->cnpj);
+        $stmt->execute();
+        return $stmt;
+    }
+
+    // GET Verify if password is correct
+    public function verUsuarioPorLogin(){
+        $sqlQuery = "SELECT * FROM ". $this->db_table ." WHERE nm_login = ? LIMIT 0, 1";
+        $stmt = $this->db_conn->prepare($sqlQuery);
+        $stmt->bindParam(1, $this->login);
+        $stmt->execute();
+        $dataRow = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        $this->senha = $dataRow["vl_senha"];
+        $this->_id = $dataRow["id_usuario"];
+    }
+
     // READ single
     public function verUsuarioPorId(){
-        $sqlQuery = "SELECT
-                        id_usuario,      
-                        nm_login,        
-                        nm_email,        
-                        vl_senha,               
-                        st_admin,        
-                        st_doador,       
-                        st_assinante,    
-                        st_colaborador,  
-                        st_voluntario,   
-                        nm_razao_social, 
-                        vl_cpf,          
-                        vl_cnpj,         
-                        dt_nascimento,   
-                        vl_url,          
-                        dt_criacao,      
-                        fl_foto          
-                      FROM
-                        ". $this->db_table ."
+        $sqlQuery = "SELECT * FROM ". $this->db_table ."
                     WHERE
-                       id_usuario = ?
+                    id_usuario = ?
                     LIMIT 0,1";
         $stmt = $this->db_conn->prepare($sqlQuery);
         $stmt->bindParam(1, $this->_id);
@@ -137,6 +160,8 @@ class usuario{
         $this->voluntario         = $dataRow["st_voluntario"];
         $this->dataCriacao        = $dataRow["dt_criacao"];
         $this->foto               = $dataRow["fl_foto"];
+
+        return $stmt;
     }
 
 //    // UPDATE

@@ -5,7 +5,7 @@ header("Access-Control-Allow-Methods: DELETE");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
-include_once '..\database\database.php';
+include_once '..\config\database.php';
 include_once '..\models\usuario.php';
 
 $database = new Database();
